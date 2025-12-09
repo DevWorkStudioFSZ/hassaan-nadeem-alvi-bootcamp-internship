@@ -1,0 +1,23 @@
+{
+  "Harley Street": {
+    "Lane 7": "4:00 PM",
+    "Lane 1": "6:00 PM",
+    "Lane 2": "Normal",
+    "Main": "3:00 PM"
+  },
+  "Saddar Road": {
+    "Main": "5:00 PM",
+    "Lane A": "Normal"
+  },
+  "Sixth Road": {
+    "Lane 2": "3:00 PM",
+    "Main": "Normal"
+  },
+  "Adiala Road": {
+    "Main": "Normal"
+  },
+  "Satellite Town": {
+    "Lane 5": "Normal",
+    "Lane 7": "7:00 PM"
+  }
+}

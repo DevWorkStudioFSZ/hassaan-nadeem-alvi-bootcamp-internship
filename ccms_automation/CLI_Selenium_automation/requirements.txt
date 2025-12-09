@@ -1,0 +1,35 @@
+# ============================================
+# 📄 Requirements for PITC Complaint Portal Automation
+# ============================================
+
+# Web Automation & Browser Control
+selenium>=4.15.0               # Main web automation library
+undetected-chromedriver>=3.5.0  # Stealth Chrome driver to avoid detection
+
+# Speech-to-Text (Audio Processing)
+openai-whisper>=20231117       # OpenAI's Whisper for voice transcription
+torch>=2.0.0                   # PyTorch (required by Whisper)
+torchaudio>=2.0.0              # Audio processing for Whisper
+
+# Data Visualization & Analysis
+matplotlib>=3.7.0             # Plotting and visualization
+numpy>=1.24.0                 # Numerical operations (Whisper dependency)
+pandas>=2.0.0                 # Data manipulation (optional for future use)
+
+# Audio Processing Support
+librosa>=0.10.0               # Audio analysis (Whisper dependency)
+soundfile>=0.12.0             # Audio file I/O
+
+# Utilities
+tqdm>=4.65.0                  # Progress bars for Whisper
+regex>=2023.5.5               # Advanced regex (Whisper dependency)
+
+# Optional: For enhanced functionality
+PyPDF2>=3.0.0                 # PDF manipulation (future use)
+python-dotenv>=1.0.0          # Environment variable management
+requests>=2.31.0              # HTTP requests (future API integration)
+
+# Development & Testing
+pytest>=7.4.0                 # Testing framework
+black>=23.0.0                 # Code formatting
+flake8>=6.0.0                 # Code linting

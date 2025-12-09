@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Randomiser47 – Rawalpindi Voice Assistant</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .recording { animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 min-h-screen text-white">
+  <div class="container mx-auto px-4 py-12">
+    <div class="text-center mb-10">
+      <h1 class="text-5xl font-bold mb-4">Rawalpindi Load-Shedding Assistant</h1>
+      <p class="text-xl opacity-90">By <strong>Randomiser47</strong> • 85,956 Streets • English + Urdu</p>
+      <div class="flex justify-center gap-6 mt-6">
+        <a href="https://linkedin.com/in/hassaan-alvi" target="_blank" class="text-blue-400 hover:text-blue-300">
+          LinkedIn</a>
+        <a href="https://github.com/Randomiser47" target="_blank" class="text-blue-400 hover:text-blue-300">
+          GitHub</a>
+      </div>
+    </div>
+
+    <div class="max-w-2xl mx-auto">
+      <div class="bg-white/10 backdrop-blur-lg rounded-3xl p-8 shadow-2xl">
+        <div class="text-center mb-8">
+          <div id="micButton" class="inline-block p-10 bg-red-600 rounded-full cursor-pointer hover:bg-red-700 transition recording hidden">
+            <i class="fas fa-microphone text-6xl"></i>
+          </div>
+          <div id="micIdle" class="inline-block p-10 bg-gray-700 rounded-full cursor-pointer hover:bg-gray-600 transition">
+            <i class="fas fa-microphone text-6xl"></i>
+          </div>
+          <p class="mt-6 text-lg">Click the mic & speak in English or Urdu</p>
+          <p class="text-sm opacity-70 mt-2">Example: "بجلی نہیں آ رہی Harley Street Lane 7"</p>
+        </div>
+
+        <div id="result" class="mt-8 space-y-4 text-left"></div>
+        <div id="loading" class="hidden text-center mt-8">
+          <i class="fas fa-spinner fa-spin text-4xl"></i>
+          <p class="mt-4">Processing your voice...</p>
+        </div>
+      </div>
+
+      <div class="text-center mt-10 text-sm opacity-70">
+        <p>Deployed with Flask + Whisper AI • Randomiser47 © 2025</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let mediaRecorder;
+    let audioChunks = [];
+    const micButton = document.getElementById('micButton');
+    const micIdle = document.getElementById('micIdle');
+    const resultDiv = document.getElementById('result');
+    const loading = document.getElementById('loading');
+
+    async function startRecording() {
+      audioChunks = [];
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      
+      mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+      mediaRecorder.onstop = sendAudio;
+      
+      mediaRecorder.start();
+      micIdle.classList.add('hidden');
+      micButton.classList.remove('hidden');
+    }
+
+    function stopRecording() {
+      mediaRecorder.stop();
+      mediaRecorder.stream.getTracks().forEach(track => track.stop());
+      micButton.classList.add('hidden');
+      loading.classList.remove('hidden');
+    }
+
+    async function sendAudio() {
+      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+      const formData = new FormData();
+      formData.append('audio', audioBlob, 'voice.webm');
+
+      try {
+        const response = await fetch('/upload', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await response.json();
+
+        loading.classList.add('hidden');
+        micIdle.classList.remove('hidden');
+
+        resultDiv.innerHTML = `
+          <div class="bg-white/20 rounded-xl p-6">
+            <p class="text-sm opacity-80">You said:</p>
+            <p class="text-2xl font-bold mt-2 mb-4">"${data.transcribed_text}"</p>
+            
+            <div class="grid grid-cols-2 gap-4 mt-6 text-sm">
+              <div><strong>Language:</strong> ${data.detected_language || "N/A"}</div>
+              <div><strong>Intent:</strong> ${data.intent}</div>
+              <p class="text-sm opacity-70 mt-2">
+  Memory: <strong>${data.memory || "None"}</strong>
+</p>
+            </div>
+
+            <div class="mt-6 p-6 bg-black/30 rounded-xl text-3xl leading-relaxed text-center font-bold">
+              ${data.response.replace("Lane", "<span class='text-yellow-400'>Lane</span>")}
+            </div>
+          </div>
+        `;
+      } catch (err) {
+        resultDiv.innerHTML = `<p class="text-red-400">Error: ${err.message}</p>`;
+        loading.classList.add('hidden');
+        micIdle.classList.remove('hidden');
+      }
+    }
+
+    micIdle.onclick = startRecording;
+    micButton.onclick = stopRecording;
+  </script>
+</body>
+</html>
